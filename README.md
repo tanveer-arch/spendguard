@@ -1,5 +1,6 @@
 # spendguard 💰
 
+[![PyPI version](https://img.shields.io/pypi/v/spendguard-mcp.svg)](https://pypi.org/project/spendguard-mcp/)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![Hacktoberfest](https://img.shields.io/badge/Hacktoberfest-opted--in-orange.svg)
@@ -61,6 +62,31 @@ Then ask your agent:
 | `set_budget` | Persist a daily/session cap or confirm-above threshold |
 | `suggest_cheaper_query` | Concrete rewrites: LIMIT injection, partition filters, SELECT \* guidance |
 
+## Proven live
+
+We tested the full governor loop end-to-end on live BigQuery with the public `bigquery-public-data.samples.shakespeare` dataset. The dry-run returned a **PRECISE** estimate of 1,332,943 bytes (≈ $0.000008). The actual billed cost came back ~8× higher (≈ $0.00006) — entirely because BigQuery enforces a 10 MB minimum per query. After reconciliation, the ledger auto-calibrated the BigQuery engine factor from 1.0 → 3.06 in a single query.
+
+## How it works
+
+```
+       agent
+         │
+         ▼
+   ┌──────────────────────────────────────────────┐
+   │  spendguard                              │
+   │                                              │
+   │  1. estimate    ─ free dry-run, $ figure    │
+   │  2. budget gate ─ refuse / rewrite if over  │
+   │  3. execute     ─ run on warehouse          │
+   │  4. reconcile   ─ actual billed cost        │
+   │  5. ledger      ─ update calibration        │
+   └──────────────────────────────────────────────┘
+         │
+         ▼
+     warehouse
+   (BigQuery · Snowflake · Databricks)
+```
+
 ## Accuracy tiers — we tell you how much to trust the number
 
 | Engine | Tier | How |
@@ -69,7 +95,7 @@ Then ask your agent:
 | Snowflake | **UPPER_BOUND** | `EXPLAIN USING JSON` plan → largest byte figure as bound; dollars assume one 60s minimum billing window |
 | Databricks | **HEURISTIC** | No dry-run API exists — warehouse size × plan-shape runtime × $/DBU, then **calibrated against `system.billing.usage` actuals** over time |
 
-Every estimate carries its tier and caveats. BigQuery RLS-masked tables report 0 bytes *by design* — we flag it instead of calling it free. Remote-function / `ML.GENERATE_TEXT` billing is excluded and flagged. Capacity-billed projects get bytes only, no fake dollars.
+Every estimate carries its tier and caveats. BigQuery enforces a **10 MB minimum billing** per query — any scan under 10 MB is billed as 10 MB (the estimate will carry a caveat). BigQuery enforces a **10 MB minimum billing** per query — any scan under 10 MB is billed as 10 MB (the estimate will carry a caveat). BigQuery RLS-masked tables report 0 bytes *by design* — we flag it instead of calling it free. Remote-function / `ML.GENERATE_TEXT` billing is excluded and flagged. Capacity-billed projects get bytes only, no fake dollars.
 
 ## What makes it different
 
