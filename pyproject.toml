@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "spendguard-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Spend governor for AI agents running SQL on data warehouses: pre-flight cost estimates, estimate-vs-actual ledger, budgets with teeth, and cheaper-query rewrites. MCP server, drop-in stdio."
 readme = "README.md"
 license = { text = "MIT" }
