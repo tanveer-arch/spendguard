@@ -1,5 +1,9 @@
 # spendguard 💰
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![Hacktoberfest](https://img.shields.io/badge/Hacktoberfest-opted--in-orange.svg)
+
 **Your AI agent has a company credit card and no spending limit. spendguard is the bouncer.**
 
 Give an agent a "run SQL" tool on BigQuery or Snowflake and it will happily `SELECT *` a billion-row table and burn $4 before you've finished your coffee. Nobody watches the meter. spendguard is a drop-in MCP server that sits between your agent and the warehouse: it previews the dollar cost *before* every query, enforces budgets, learns how accurate its estimates are, and suggests cheaper rewrites when a query blows the budget.
@@ -9,9 +13,9 @@ Not a previewer — a **spend governor**.
 ## 30-second start
 
 ```bash
-uvx spendguard
-# or
-pipx install spendguard
+pip install git+https://github.com/tanveer-arch/spendguard.git
+`
+*(Note: PyPI release (uvx spendguard) coming with v0.1.0)*
 ```
 
 Add to your MCP client (Claude Code, Cursor, Codex, Copilot — see `examples/.mcp.json.example`):
