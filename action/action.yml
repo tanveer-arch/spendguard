@@ -1,0 +1,45 @@
+name: "spendguard dbt/SQL cost guard"
+description: >-
+  Dry-runs every changed *.sql / dbt model file in a PR against BigQuery and
+  posts a sticky comment with per-file bytes scanned, estimated USD, and the
+  total cost delta vs the base branch. v1 is BigQuery-only.
+branding:
+  icon: "dollar-sign"
+  color: "green"
+
+inputs:
+  gcp_project:
+    description: "GCP project to dry-run against (billed nothing; dry runs are free)"
+    required: true
+  gcp_credentials:
+    description: "Service-account JSON with bigquery.jobs.create (stored as a secret)"
+    required: true
+  github_token:
+    description: "Token for reading PR files and posting the comment"
+    required: true
+    default: ${{ github.token }}
+  fail_on_over_cap:
+    description: "Fail the check when the total delta exceeds max_delta_usd"
+    required: false
+    default: "false"
+  max_delta_usd:
+    description: "Total PR cost-delta budget in USD (used with fail_on_over_cap)"
+    required: false
+    default: "10"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - run: pip install google-cloud-bigquery
+      shell: bash
+    - run: python "$GITHUB_ACTION_PATH/entrypoint.py"
+      shell: bash
+      env:
+        INPUT_GCP_PROJECT: ${{ inputs.gcp_project }}
+        INPUT_GCP_CREDENTIALS: ${{ inputs.gcp_credentials }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github_token }}
+        INPUT_FAIL_ON_OVER_CAP: ${{ inputs.fail_on_over_cap }}
+        INPUT_MAX_DELTA_USD: ${{ inputs.max_delta_usd }}

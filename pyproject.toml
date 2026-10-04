@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "spendguard"
+version = "0.1.0"
+description = "Spend governor for AI agents running SQL on data warehouses: pre-flight cost estimates, estimate-vs-actual ledger, budgets with teeth, and cheaper-query rewrites. MCP server, drop-in stdio."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "tanveer-arch" }]
+requires-python = ">=3.10"
+keywords = ["mcp", "bigquery", "snowflake", "databricks", "cost", "ai-agents"]
+dependencies = [
+    "mcp>=1.0.0",
+    "google-cloud-bigquery>=3.0.0",
+    "snowflake-connector-python>=3.0.0",
+    "databricks-sql-connector>=3.0.0",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+spendguard = "spendguard.server:main"
+
+[project.urls]
+Homepage = "https://github.com/tanveer-arch/spendguard"
+Issues = "https://github.com/tanveer-arch/spendguard/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/spendguard"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

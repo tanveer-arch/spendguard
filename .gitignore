@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+.pytest_cache/
+*.db
+*.db-journal
+
+# Local spendguard state (never commit real spend data)
+.spendguard/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+spendguard-*.json
