@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0"]
+dev = ["pytest>=8.0.0", "ruff", "pre-commit"]
 
 [project.scripts]
 spendguard = "spendguard.server:main"
@@ -34,3 +34,7 @@ packages = ["src/spendguard"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"

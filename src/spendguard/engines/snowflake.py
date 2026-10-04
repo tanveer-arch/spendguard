@@ -117,10 +117,10 @@ class SnowflakeEngine(Engine):
         """EXPLAIN the query and upper-bound bytes from the optimizer plan."""
         conn = self._connect()
         caveats = [
-            "Snowflake exposes no pre-flight byte count: this is an UPPER BOUND "
-            "derived from the optimizer plan, not an exact figure.",
-            "Snowflake bills a 60-second minimum per warehouse start; short "
-            "queries cost at least that.",
+            ("Snowflake exposes no pre-flight byte count: this is an UPPER BOUND "
+            "derived from the optimizer plan, not an exact figure."),
+            ("Snowflake bills a 60-second minimum per warehouse start; short "
+            "queries cost at least that."),
         ]
         try:
             cur = conn.cursor()

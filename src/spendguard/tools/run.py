@@ -10,7 +10,12 @@ The full spend-governor loop in one tool call:
 
 from __future__ import annotations
 
-from spendguard.budgets import Decision, Policy, consume_confirmation, request_confirmation
+from spendguard.budgets import (
+    Decision,
+    Policy,
+    consume_confirmation,
+    request_confirmation,
+)
 from spendguard.engines import get_engine
 from spendguard.ledger import apply_calibration, record_actual, record_estimate
 
@@ -50,23 +55,22 @@ def run_query_bounded(
 
     check = _policy.check(estimate)
 
-    if check.decision == Decision.NEEDS_CONFIRMATION:
-        if not confirmation_token or not consume_confirmation(
-            confirmation_token, estimate
-        ):
-            token = request_confirmation(estimate)
-            return {
-                "status": "needs_confirmation",
-                "reason": "confirm_above_threshold",
-                "detail": " ".join(check.reasons),
-                "confirmation_token": token,
-                "confirmation_token_ttl_seconds": 300,
-                "instruction": (
-                    "Show the estimate and reasons to the human. If they approve, "
-                    "call run_query_bounded again with confirmation_token set."
-                ),
-                "estimate": estimate.to_dict(),
-            }
+    if check.decision == Decision.NEEDS_CONFIRMATION and (
+        not confirmation_token or not consume_confirmation(confirmation_token, estimate)
+    ):
+        token = request_confirmation(estimate)
+        return {
+            "status": "needs_confirmation",
+            "reason": "confirm_above_threshold",
+            "detail": " ".join(check.reasons),
+            "confirmation_token": token,
+            "confirmation_token_ttl_seconds": 300,
+            "instruction": (
+                "Show the estimate and reasons to the human. If they approve, "
+                "call run_query_bounded again with confirmation_token set."
+            ),
+            "estimate": estimate.to_dict(),
+        }
 
     if check.decision in (Decision.OVER_CAP, Decision.ANOMALY):
         return {

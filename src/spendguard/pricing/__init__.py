@@ -2,4 +2,4 @@
 
 from spendguard.pricing import bigquery, databricks, snowflake
 
-__all__ = ["bigquery", "snowflake", "databricks"]
+__all__ = ["bigquery", "databricks", "snowflake"]

@@ -12,6 +12,13 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+## Linting
+
+```bash
+ruff check
+```
+We use `ruff` for linting. Please ensure `ruff check` passes on the whole codebase before submitting a PR. You can also use `pre-commit` to run it automatically.
+
 ## Tests
 
 ```bash

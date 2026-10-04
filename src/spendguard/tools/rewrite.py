@@ -40,7 +40,7 @@ def _has_limit(sql: str) -> bool:
 
 
 def _is_select(sql: str) -> bool:
-    cleaned = re.sub(r"(--.*?$|/\*.*?\*/)", "", sql, flags=re.M | re.S).strip()
+    cleaned = re.sub(r"(--.*?$|/\*.*?\*/)", "", sql, flags=re.MULTILINE | re.DOTALL).strip()
     return cleaned[:6].upper() == "SELECT" or cleaned[:1] == "("
 
 
@@ -80,7 +80,7 @@ def _rule_unbounded_sort(sql: str) -> Suggestion | None:
 
 
 def _rule_select_star(sql: str) -> Suggestion | None:
-    if re.search(r"^\s*SELECT\s+\*\s", sql, re.IGNORECASE | re.M):
+    if re.search(r"^\s*SELECT\s+\*\s", sql, re.IGNORECASE | re.MULTILINE):
         return Suggestion(
             issue="select_star",
             detail=(
@@ -93,7 +93,7 @@ def _rule_select_star(sql: str) -> Suggestion | None:
                 r"\1/* TODO: list only needed columns, e.g. id, created_at */ ",
                 sql,
                 count=1,
-                flags=re.IGNORECASE | re.M,
+                flags=re.IGNORECASE | re.MULTILINE,
             ),
             template=True,
         )
