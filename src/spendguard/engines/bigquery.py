@@ -101,8 +101,8 @@ class BigQueryEngine(Engine):
                 estimated_cost_usd=None,
                 caveats=caveats
                 + [
-                    "Project uses capacity (Editions) billing: flat slot pricing, "
-                    "so no dollar figure is computed. Bytes scanned is exact."
+                    ("Project uses capacity (Editions) billing: flat slot pricing, "
+                    "so no dollar figure is computed. Bytes scanned is exact.")
                 ],
                 sql_hash=_sql_hash(sql),
             )

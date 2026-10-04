@@ -79,10 +79,10 @@ def main() -> int:
     project = os.environ["INPUT_GCP_PROJECT"]
     token = os.environ["INPUT_GITHUB_TOKEN"]
     repo = os.environ["GITHUB_REPOSITORY"]
-    event = json.load(open(os.environ["GITHUB_EVENT_PATH"]))
+    with open(os.environ["GITHUB_EVENT_PATH"]) as f:
+        event = json.load(f)
     pr_number = event["pull_request"]["number"]
     base_sha = event["pull_request"]["base"]["sha"]
-    head_sha = event["pull_request"]["head"]["sha"]
 
     creds = os.environ["INPUT_GCP_CREDENTIALS"]
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
@@ -135,12 +135,12 @@ def main() -> int:
         )
     lines += [
         "",
-        f"**Total delta: {fmt_usd(delta)}** ({fmt_bytes(abs(delta))} "
-        f"{'more' if delta >= 0 else 'less'} scanned per run)",
+        (f"**Total delta: {fmt_usd(delta)}** ({fmt_bytes(abs(delta))} "
+        f"{'more' if delta >= 0 else 'less'} scanned per run)"),
         "",
-        "> Estimates use BigQuery on-demand ($6.25/TiB), dry-run bytes. They do "
+        ("> Estimates use BigQuery on-demand ($6.25/TiB), dry-run bytes. They do "
         "not subtract the 1 TiB/month free tier, and RLS-masked tables report "
-        "0 bytes by design — $0.00 is not proof a query is free.",
+        "0 bytes by design — $0.00 is not proof a query is free."),
     ]
     body = "\n".join(lines)
 

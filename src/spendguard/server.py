@@ -35,10 +35,10 @@ _CAPABILITIES: dict[str, dict] = {
         "supports_bytes": True,
         "supports_dollars": True,
         "caveats": [
-            "Row-level-security masked tables report 0 bytes by design — "
-            "$0.00 is never proof a query is free.",
-            "Remote functions / BigQuery ML remote inference bill separately "
-            "and are excluded (flagged by text heuristic).",
+            ("Row-level-security masked tables report 0 bytes by design — "
+            "$0.00 is never proof a query is free."),
+            ("Remote functions / BigQuery ML remote inference bill separately "
+            "and are excluded (flagged by text heuristic)."),
             "Capacity (Editions) billing: bytes only, no dollar figure.",
         ],
     },
@@ -50,10 +50,10 @@ _CAPABILITIES: dict[str, dict] = {
         "supports_bytes": True,
         "supports_dollars": True,
         "caveats": [
-            "No pre-flight byte count exists on Snowflake — this is a bound, "
-            "not an exact figure.",
-            "60-second minimum billing per warehouse start is assumed; "
-            "longer queries cost more.",
+            ("No pre-flight byte count exists on Snowflake — this is a bound, "
+            "not an exact figure."),
+            ("60-second minimum billing per warehouse start is assumed; "
+            "longer queries cost more."),
             "$/credit depends on edition/region (default $2.0, configurable).",
         ],
     },
@@ -65,8 +65,8 @@ _CAPABILITIES: dict[str, dict] = {
         "supports_bytes": False,
         "supports_dollars": True,
         "caveats": [
-            "Directional, not exact — the first estimates on a new workspace "
-            "are rough until the ledger calibrates.",
+            ("Directional, not exact — the first estimates on a new workspace "
+            "are rough until the ledger calibrates."),
             "Includes Databricks' 1-minute minimum billing.",
         ],
     },

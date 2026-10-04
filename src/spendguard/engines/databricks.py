@@ -107,9 +107,9 @@ class DatabricksEngine(Engine):
             estimated_bytes=None,  # Databricks exposes no pre-flight byte figure
             estimated_cost_usd=usd,
             caveats=[
-                "HEURISTIC estimate: Databricks has no dry-run API. Derived from "
+                ("HEURISTIC estimate: Databricks has no dry-run API. Derived from "
                 f"warehouse size ({size}, {tier} tier) and Spark plan shape; "
-                "directional, not exact. Improves as the ledger calibrates.",
+                "directional, not exact. Improves as the ledger calibrates."),
                 "Includes Databricks' 1-minute minimum billing per warehouse start.",
             ],
             sql_hash=_sql_hash(sql),

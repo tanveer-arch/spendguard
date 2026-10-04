@@ -19,7 +19,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-from spendguard.models import AccuracyTier, Estimate
+from spendguard.models import Estimate
 
 ALPHA = 0.3  # EWMA weight for the newest actual/estimate ratio
 
