@@ -95,7 +95,7 @@ We tested the full governor loop end-to-end on live BigQuery with the public `bi
 | Snowflake | **UPPER_BOUND** | `EXPLAIN USING JSON` plan → largest byte figure as bound; dollars assume one 60s minimum billing window |
 | Databricks | **HEURISTIC** | No dry-run API exists — warehouse size × plan-shape runtime × $/DBU, then **calibrated against `system.billing.usage` actuals** over time |
 
-Every estimate carries its tier and caveats. BigQuery enforces a **10 MB minimum billing** per query — any scan under 10 MB is billed as 10 MB (the estimate will carry a caveat). BigQuery enforces a **10 MB minimum billing** per query — any scan under 10 MB is billed as 10 MB (the estimate will carry a caveat). BigQuery RLS-masked tables report 0 bytes *by design* — we flag it instead of calling it free. Remote-function / `ML.GENERATE_TEXT` billing is excluded and flagged. Capacity-billed projects get bytes only, no fake dollars.
+Every estimate carries its tier and caveats. BigQuery enforces a **10 MB minimum billing** per query — any scan under 10 MB is billed as 10 MB (the estimate will carry a caveat). BigQuery RLS-masked tables report 0 bytes *by design* — we flag it instead of calling it free. Remote-function / `ML.GENERATE_TEXT` billing is excluded and flagged. Capacity-billed projects get bytes only, no fake dollars.
 
 ## What makes it different
 
