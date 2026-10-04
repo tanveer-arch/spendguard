@@ -13,15 +13,17 @@ Not a previewer — a **spend governor**.
 ## 30-second start
 
 ```bash
-pip install git+https://github.com/tanveer-arch/spendguard.git
+uvx spendguard-mcp
+# or
+pipx install spendguard-mcp
 `
-*(Note: PyPI release (uvx spendguard) coming with v0.1.0)*
+*(Note: PyPI release (uvx spendguard-mcp) coming with v0.1.0)*
 ```
 
 Add to your MCP client (Claude Code, Cursor, Codex, Copilot — see `examples/.mcp.json.example`):
 
 ```json
-{ "mcpServers": { "spendguard": { "command": "uvx", "args": ["spendguard"],
+{ "mcpServers": { "spendguard": { "command": "uvx", "args": ["spendguard-mcp"],
   "env": { "BIGQUERY_PROJECT": "my-project",
             "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/sa.json" } } } }
 ```
