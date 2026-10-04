@@ -31,7 +31,9 @@ class Engine(ABC):
         """
 
     @abstractmethod
-    def execute(self, sql: str, max_rows: int = 1000, **kwargs) -> tuple[list[dict], str]:
+    def execute(
+        self, sql: str, max_rows: int = 1000, **kwargs
+    ) -> tuple[list[dict], str]:
         """Execute SQL and return (rows, query_id). Rows are capped at max_rows."""
 
     @abstractmethod

@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0"]
+dev = ["pytest>=8.0.0", "ruff>=0.14.0"]
 
 [project.scripts]
 spendguard = "spendguard.server:main"
@@ -31,6 +31,13 @@ Issues = "https://github.com/tanveer-arch/spendguard/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/spendguard"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -10,7 +10,12 @@ The full spend-governor loop in one tool call:
 
 from __future__ import annotations
 
-from spendguard.budgets import Decision, Policy, consume_confirmation, request_confirmation
+from spendguard.budgets import (
+    Decision,
+    Policy,
+    consume_confirmation,
+    request_confirmation,
+)
 from spendguard.engines import get_engine
 from spendguard.ledger import apply_calibration, record_actual, record_estimate
 

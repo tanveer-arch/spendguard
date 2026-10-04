@@ -40,7 +40,9 @@ def _has_limit(sql: str) -> bool:
 
 
 def _is_select(sql: str) -> bool:
-    cleaned = re.sub(r"(--.*?$|/\*.*?\*/)", "", sql, flags=re.M | re.S).strip()
+    cleaned = re.sub(
+        r"(--.*?$|/\*.*?\*/)", "", sql, flags=re.MULTILINE | re.DOTALL
+    ).strip()
     return cleaned[:6].upper() == "SELECT" or cleaned[:1] == "("
 
 
@@ -80,7 +82,7 @@ def _rule_unbounded_sort(sql: str) -> Suggestion | None:
 
 
 def _rule_select_star(sql: str) -> Suggestion | None:
-    if re.search(r"^\s*SELECT\s+\*\s", sql, re.IGNORECASE | re.M):
+    if re.search(r"^\s*SELECT\s+\*\s", sql, re.IGNORECASE | re.MULTILINE):
         return Suggestion(
             issue="select_star",
             detail=(
@@ -93,7 +95,7 @@ def _rule_select_star(sql: str) -> Suggestion | None:
                 r"\1/* TODO: list only needed columns, e.g. id, created_at */ ",
                 sql,
                 count=1,
-                flags=re.IGNORECASE | re.M,
+                flags=re.IGNORECASE | re.MULTILINE,
             ),
             template=True,
         )
@@ -102,9 +104,7 @@ def _rule_select_star(sql: str) -> Suggestion | None:
 
 def _rule_bigquery_partition_filter(sql: str) -> Suggestion | None:
     """BigQuery: queries without a partition filter scan whole tables."""
-    if re.search(
-        r"(_PARTITIONTIME|_PARTITIONDATE|\b_PARTITION\b)", sql, re.IGNORECASE
-    ):
+    if re.search(r"(_PARTITIONTIME|_PARTITIONDATE|\b_PARTITION\b)", sql, re.IGNORECASE):
         return None
     m = re.search(r"\bFROM\s+(`?[\w.\-]+`?)", sql, re.IGNORECASE)
     if not m:
@@ -116,9 +116,7 @@ def _rule_bigquery_partition_filter(sql: str) -> Suggestion | None:
             r"\bWHERE\b", f"WHERE {filt} AND", sql, count=1, flags=re.IGNORECASE
         )
     else:
-        rewritten = (
-            sql[: m.end()] + f" WHERE {filt}" + sql[m.end():]
-        )
+        rewritten = sql[: m.end()] + f" WHERE {filt}" + sql[m.end() :]
     return Suggestion(
         issue="missing_partition_filter",
         detail=(

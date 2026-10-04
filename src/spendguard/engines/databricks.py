@@ -74,9 +74,7 @@ class DatabricksEngine(Engine):
                 "(your-workspace.cloud.databricks.com), DATABRICKS_HTTP_PATH "
                 "(/sql/1.0/warehouses/<id>), and DATABRICKS_TOKEN."
             )
-        return dbsql.connect(
-            server_hostname=host, http_path=path, access_token=token
-        )
+        return dbsql.connect(server_hostname=host, http_path=path, access_token=token)
 
     def _warehouse_size(self) -> tuple[str, str]:
         size = os.environ.get("DATABRICKS_WAREHOUSE_SIZE", "X-SMALL")
@@ -115,7 +113,9 @@ class DatabricksEngine(Engine):
             sql_hash=_sql_hash(sql),
         )
 
-    def execute(self, sql: str, max_rows: int = 1000, **kwargs) -> tuple[list[dict], str]:
+    def execute(
+        self, sql: str, max_rows: int = 1000, **kwargs
+    ) -> tuple[list[dict], str]:
         """Run the query and return (rows capped at max_rows, statement_id)."""
         conn = self._connect()
         try:

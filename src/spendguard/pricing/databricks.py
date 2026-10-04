@@ -3,7 +3,7 @@
 Databricks bills SQL warehouses in DBUs (Databricks Units) per hour, with the
 rate set by warehouse size and multiplied by the tier (Standard / Premium /
 Enterprise). The *dollar* price of a DBU varies by cloud, region, and contract
-($0.22–$0.70+), so USD_PER_DBU is a configurable approximate default, not a
+($0.22â€“$0.70+), so USD_PER_DBU is a configurable approximate default, not a
 quote.
 
 Because Databricks exposes no dry-run API, all dollar figures derived here
@@ -43,7 +43,8 @@ def dbu_per_hour(warehouse_size: str, tier: str = "standard") -> float:
     mult = TIER_MULTIPLIER.get(tier.strip().lower())
     if mult is None:
         raise ValueError(
-            f"Unknown Databricks tier {tier!r}; expected one of {sorted(TIER_MULTIPLIER)}"
+            f"Unknown Databricks tier {tier!r}; expected one of "
+            f"{sorted(TIER_MULTIPLIER)}"
         )
     try:
         return DBU_PER_HOUR[size] * mult

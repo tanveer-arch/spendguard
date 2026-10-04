@@ -1,12 +1,12 @@
-"""Snowflake engine — UPPER_BOUND estimates via EXPLAIN USING JSON.
+"""Snowflake engine â€” UPPER_BOUND estimates via EXPLAIN USING JSON.
 
 Snowflake exposes no pre-flight byte count, so we take the optimizer plan
 (EXPLAIN USING JSON) and extract the largest byte figure the planner admits
-to — a genuine upper bound, labeled as such. Dollar conversion uses the
+to â€” a genuine upper bound, labeled as such. Dollar conversion uses the
 warehouse's credit burn rate; Snowflake bills a 60-second minimum per
 warehouse start, which we surface as a caveat rather than silently baking in.
 
-Auth: key-pair (JWT) is preferred — SNOWFLAKE_PRIVATE_KEY_PATH pointing at an
+Auth: key-pair (JWT) is preferred â€” SNOWFLAKE_PRIVATE_KEY_PATH pointing at an
 unencrypted RSA .p8. Password auth via SNOWFLAKE_PASSWORD is accepted as a
 fallback. The role is never defaulted to ACCOUNTADMIN.
 """
@@ -62,7 +62,8 @@ class SnowflakeEngine(Engine):
         except ImportError as exc:
             raise MissingCredentialsError(
                 "snowflake-connector-python is not installed. "
-                "Run: pip install spendguard (or pip install snowflake-connector-python)."
+                "Run: pip install spendguard (or pip install "
+                "snowflake-connector-python)."
             ) from exc
         account = os.environ.get("SNOWFLAKE_ACCOUNT")
         user = os.environ.get("SNOWFLAKE_USER")
@@ -134,12 +135,12 @@ class SnowflakeEngine(Engine):
             if upper_bytes is None:
                 caveats.append(
                     "The optimizer plan carried no byte figures, so no byte "
-                    "upper bound could be derived — dollar figure is "
+                    "upper bound could be derived â€” dollar figure is "
                     "warehouse-rate based only."
                 )
             # We cannot know runtime pre-flight; the honest upper bound for a
             # bounded agent query is one 60s minimum at the warehouse rate.
-            # Anything longer is genuinely unknown — say so.
+            # Anything longer is genuinely unknown â€” say so.
             size = self._warehouse_size(conn)
             usd = sf_pricing.runtime_cost_usd(size, 60.0)
             caveats.append(
@@ -157,7 +158,9 @@ class SnowflakeEngine(Engine):
         finally:
             conn.close()
 
-    def execute(self, sql: str, max_rows: int = 1000, **kwargs) -> tuple[list[dict], str]:
+    def execute(
+        self, sql: str, max_rows: int = 1000, **kwargs
+    ) -> tuple[list[dict], str]:
         """Run the query and return (rows capped at max_rows, query_id)."""
         conn = self._connect()
         try:
@@ -183,7 +186,7 @@ class SnowflakeEngine(Engine):
         """
         raise NotImplementedError(
             "fetch_actual_cost for Snowflake needs a live account to validate "
-            "the ACCOUNT_USAGE.QUERY_HISTORY shape — see the TODO in "
+            "the ACCOUNT_USAGE.QUERY_HISTORY shape â€” see the TODO in "
             "engines/snowflake.py. Implement against BYTES_SCANNED and "
             "CREDITS_USED_COMPUTE, then convert with pricing.snowflake."
         )

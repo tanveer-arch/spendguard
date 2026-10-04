@@ -8,7 +8,7 @@ per-file bytes + estimated-USD table and the total cost delta.
 Only stdlib + google-cloud-bigquery are used. Dry runs are free.
 Honest scope note: dollar figures use the on-demand $6.25/TiB rate and do not
 account for the 1 TiB/month free tier, RLS-masked tables, or remote-function
-billing — the comment says so.
+billing -- the comment says so.
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ def dry_run_bytes(client, sql: str, project: str) -> int | None:
             job_config=bigquery.QueryJobConfig(dry_run=True, use_query_cache=False),
         )
         return job.total_bytes_processed or 0
-    except Exception as exc:  # noqa: BLE001 - one bad file must not kill the PR check
+    except Exception as exc:
         print(f"::warning::dry-run failed, skipping cost for one file: {exc}")
         return None
 
@@ -82,7 +82,6 @@ def main() -> int:
     event = json.load(open(os.environ["GITHUB_EVENT_PATH"]))
     pr_number = event["pull_request"]["number"]
     base_sha = event["pull_request"]["base"]["sha"]
-    head_sha = event["pull_request"]["head"]["sha"]
 
     creds = os.environ["INPUT_GCP_CREDENTIALS"]
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
@@ -95,11 +94,12 @@ def main() -> int:
 
     files = gh_api(f"/repos/{repo}/pulls/{pr_number}/files?per_page=100", token)
     sql_files = [
-        f for f in files
-        if f["filename"].endswith(".sql") and f["status"] != "removed"
+        f for f in files if f["filename"].endswith(".sql") and f["status"] != "removed"
     ]
 
-    rows: list[tuple[str, int | None, int | None]] = []  # (file, head_bytes, base_bytes)
+    rows: list[
+        tuple[str, int | None, int | None]
+    ] = []  # (file, head_bytes, base_bytes)
     for f in sql_files:
         head_sql = get_text(f["raw_url"], token)
         head_bytes = dry_run_bytes(client, head_sql, project)
@@ -111,7 +111,7 @@ def main() -> int:
             try:
                 base_sql = get_text(base_url, token)
                 base_bytes = dry_run_bytes(client, base_sql, project)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 print(f"::warning::could not dry-run base version: {exc}")
         rows.append((f["filename"], head_bytes, base_bytes))
 
@@ -121,7 +121,7 @@ def main() -> int:
 
     lines = [
         MARKER,
-        "## 💰 spendguard — query cost delta",
+        "## Ã°Å¸â€™Â° spendguard Ã¢â‚¬â€ query cost delta",
         "",
         "| file | head bytes | head est. | base est. | delta |",
         "| --- | --- | --- | --- | --- |",
@@ -140,13 +140,11 @@ def main() -> int:
         "",
         "> Estimates use BigQuery on-demand ($6.25/TiB), dry-run bytes. They do "
         "not subtract the 1 TiB/month free tier, and RLS-masked tables report "
-        "0 bytes by design — $0.00 is not proof a query is free.",
+        "0 bytes by design Ã¢â‚¬â€ $0.00 is not proof a query is free.",
     ]
     body = "\n".join(lines)
 
-    comments = gh_api(
-        f"/repos/{repo}/issues/{pr_number}/comments?per_page=100", token
-    )
+    comments = gh_api(f"/repos/{repo}/issues/{pr_number}/comments?per_page=100", token)
     existing = next((c for c in comments if MARKER in c.get("body", "")), None)
     if existing:
         gh_api(

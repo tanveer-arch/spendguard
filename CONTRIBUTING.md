@@ -1,6 +1,6 @@
 # Contributing to spendguard
 
-Thanks for considering a contribution — this project grows by people who've
+Thanks for considering a contribution â€” this project grows by people who've
 watched an agent burn warehouse budget and decided to do something about it.
 
 ## Setup
@@ -12,6 +12,25 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+## Code quality
+
+This project uses **Ruff** for Python linting and formatting, with **pre-commit**
+to run these checks automatically before commits.
+
+After installing the development dependencies, install the Git hooks:
+
+python -m pre_commit install
+
+Run all configured checks manually:
+
+python -m pre_commit run --all-files
+
+You can also run Ruff directly:
+
+ruff check .
+ruff format --check .
+
+A contribution should leave both Ruff checks passing before submission.
 ## Tests
 
 ```bash
@@ -22,7 +41,7 @@ All pricing math, ledger calibration (EWMA), budget/anomaly logic, and rewrite
 heuristics are covered by **offline** unit tests. If your change touches one of
 those areas, it needs a test. Engine modules (BigQuery / Snowflake / Databricks)
 require live cloud credentials, so they are exercised via live-integration
-scripts, not pytest — keep them importable without credentials and raise
+scripts, not pytest â€” keep them importable without credentials and raise
 `MissingCredentialsError` with a helpful message when creds are absent.
 
 ## PR conventions
@@ -34,7 +53,7 @@ scripts, not pytest — keep them importable without credentials and raise
 
 ## Labels we use
 
-Watch for **`good first issue`** and **`hacktoberfest`** — we keep a standing
+Watch for **`good first issue`** and **`hacktoberfest`** â€” we keep a standing
 queue of small, well-scoped tasks (new rewrite heuristics, pricing-table
 updates, docs) specifically for first-time contributors. Maintainers aim to
 respond to every issue and PR within 24 hours.
@@ -43,4 +62,4 @@ respond to every issue and PR within 24 hours.
 
 spendguard is a drop-in stdio MCP server, not a gateway or a hosted service.
 PRs that add deployment infrastructure, auth servers, or billing backends are
-out of scope — the whole point is that it runs wherever your agent runs.
+out of scope â€” the whole point is that it runs wherever your agent runs.

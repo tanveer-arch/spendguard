@@ -1,4 +1,4 @@
-"""BigQuery engine — PRECISE estimates via dry run.
+"""BigQuery engine â€” PRECISE estimates via dry run.
 
 The dry run is free and returns the exact bytes the query would scan, so this
 is the only engine whose estimates earn the PRECISE tier. Three BigQuery
@@ -6,7 +6,7 @@ gotchas are handled explicitly because they silently break naive estimators:
 
 1. Row-level security: dry runs against RLS-masked tables report 0 bytes *by
    design* (side-channel protection). A $0 estimate must never be presented as
-   "free" — we add a caveat and downgrade trust.
+   "free" â€” we add a caveat and downgrade trust.
 2. External services: remote functions and BigQuery ML remote-model inference
    (e.g. ML.GENERATE_TEXT) bill separately through Cloud Run / Vertex AI. The
    dry run does not include those dollars. Detected with a conservative text
@@ -38,7 +38,7 @@ class BigQueryEngine(Engine):
 
         TODO (live): uses google-cloud-bigquery's default credential chain
         (GOOGLE_APPLICATION_CREDENTIALS, gcloud ADC, GCE metadata). No code
-        change needed — just make sure the env is configured.
+        change needed â€” just make sure the env is configured.
         """
         try:
             from google.cloud import bigquery
@@ -55,7 +55,8 @@ class BigQueryEngine(Engine):
             # found, but we raise ours first so the message names the fix.
             raise MissingCredentialsError(
                 "BigQuery credentials not found. Set GOOGLE_APPLICATION_CREDENTIALS "
-                "to a service-account JSON key, or run `gcloud auth application-default login`."
+                "to a service-account JSON key, or run "
+                "`gcloud auth application-default login`."
             )
         project = os.environ.get("BIGQUERY_PROJECT") or os.environ.get(
             "GOOGLE_CLOUD_PROJECT"
@@ -84,7 +85,9 @@ class BigQueryEngine(Engine):
             )
 
         # 2. External-service billing not included in dry run.
-        if "ML.GENERATE_TEXT" in upper or ("CREATE FUNCTION" in upper and "REMOTE" in upper):
+        if "ML.GENERATE_TEXT" in upper or (
+            "CREATE FUNCTION" in upper and "REMOTE" in upper
+        ):
             caveats.append(
                 "Query uses remote functions / BigQuery ML remote-model inference: "
                 "separate Cloud Run / Vertex AI billing applies and is NOT "
@@ -92,7 +95,9 @@ class BigQueryEngine(Engine):
             )
 
         # 3. Capacity billing: bytes only, no dollars.
-        billing_model = (warehouse or os.environ.get("BIGQUERY_BILLING_MODEL", "on_demand")).lower()
+        billing_model = (
+            warehouse or os.environ.get("BIGQUERY_BILLING_MODEL", "on_demand")
+        ).lower()
         if billing_model in {"capacity", "editions"}:
             return Estimate(
                 engine=self.name,
@@ -117,7 +122,9 @@ class BigQueryEngine(Engine):
         )
 
     # -- execute --------------------------------------------------------------
-    def execute(self, sql: str, max_rows: int = 1000, **kwargs) -> tuple[list[dict], str]:
+    def execute(
+        self, sql: str, max_rows: int = 1000, **kwargs
+    ) -> tuple[list[dict], str]:
         """Run the query and return (rows capped at max_rows, job_id)."""
         client = self._client()
         job = client.query(sql)
