@@ -117,6 +117,12 @@ Every estimate carries its tier and caveats. BigQuery enforces a **10 MB minimum
     max_delta_usd: 10
 ```
 
+## Export the local ledger
+
+Run `spendguard export --csv spend.csv` for the columns `estimate_id`, `engine`, `estimated_usd`, `actual_usd` and `timestamp`. Pending estimates have an empty actual amount; unknown amounts stay empty, while zero remains zero. Multiple actuals for an estimate produce separate rows with their reconciliation timestamps, so consumers should not sum repeated estimate amounts.
+
+The export reads SQLite in read-only mode, writes the CSV atomically, and refuses to overwrite the ledger. An absent ledger produces a header-only CSV without creating state. It never queries a warehouse or exports SQL or query identifiers. Strings that spreadsheet software could interpret as formulas are prefixed with an apostrophe. Running `spendguard` without arguments still starts the stdio MCP server.
+
 ## Roadmap
 
 - [ ] Databricks `fetch_actual_cost` wiring against a live workspace (`system.billing.usage` join)
