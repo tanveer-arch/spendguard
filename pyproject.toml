@@ -23,7 +23,7 @@ dependencies = [
 dev = ["pytest>=8.0.0", "ruff", "pre-commit"]
 
 [project.scripts]
-spendguard = "spendguard.server:main"
+spendguard = "spendguard.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/tanveer-arch/spendguard"
