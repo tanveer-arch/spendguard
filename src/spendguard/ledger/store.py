@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,37 +34,49 @@ def db_path() -> Path:
     return home_dir() / "ledger.db"
 
 
-def _connect() -> sqlite3.Connection:
+@contextmanager
+def _connect():
+    """Open the ledger DB, ensuring the schema exists.
+
+    A context manager (not just a connection factory): the connection is
+    committed and *closed* on exit. ``with sqlite3.connect(...) as conn:``
+    only commits -- it never closes -- which leaks the connection and leaves
+    WAL checkpoint timing to the garbage collector.
+    """
     home_dir().mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path())
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.executescript(
-        """
-        CREATE TABLE IF NOT EXISTS estimates (
-            id INTEGER PRIMARY KEY,
-            engine TEXT NOT NULL,
-            accuracy_tier TEXT NOT NULL,
-            estimated_bytes INTEGER,
-            estimated_cost_usd REAL,
-            sql_hash TEXT NOT NULL,
-            ts TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS actuals (
-            id INTEGER PRIMARY KEY,
-            estimate_id INTEGER NOT NULL REFERENCES estimates(id),
-            query_id TEXT NOT NULL,
-            billed_bytes INTEGER,
-            billed_cost_usd REAL,
-            ts TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS calibration (
-            engine TEXT PRIMARY KEY,
-            factor REAL NOT NULL,
-            n INTEGER NOT NULL
-        );
-        """
-    )
-    return conn
+    try:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS estimates (
+                id INTEGER PRIMARY KEY,
+                engine TEXT NOT NULL,
+                accuracy_tier TEXT NOT NULL,
+                estimated_bytes INTEGER,
+                estimated_cost_usd REAL,
+                sql_hash TEXT NOT NULL,
+                ts TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS actuals (
+                id INTEGER PRIMARY KEY,
+                estimate_id INTEGER NOT NULL REFERENCES estimates(id),
+                query_id TEXT NOT NULL,
+                billed_bytes INTEGER,
+                billed_cost_usd REAL,
+                ts TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS calibration (
+                engine TEXT PRIMARY KEY,
+                factor REAL NOT NULL,
+                n INTEGER NOT NULL
+            );
+            """
+        )
+        yield conn
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def _utcnow_iso() -> str:
