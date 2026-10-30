@@ -117,6 +117,10 @@ Every estimate carries its tier and caveats. BigQuery enforces a **10 MB minimum
     max_delta_usd: 10
 ```
 
+## Estimate from the terminal
+
+Run `spendguard estimate bigquery "SELECT ..."` to get the same pre-flight estimate as the `estimate_query_cost` tool without an MCP client. It prints the accuracy tier, bytes, USD (`n/a` under capacity billing), caveats, calibration status and the ledger `estimate_id`. The query is never executed. Pass `--warehouse` to override the warehouse or billing model, or `--json` to print the tool's exact JSON payload. Missing credentials or an unknown engine exit with status 2 and a one-line error.
+
 ## Export the local ledger
 
 Run `spendguard export --csv spend.csv` for the columns `estimate_id`, `engine`, `estimated_usd`, `actual_usd` and `timestamp`. Pending estimates have an empty actual amount; unknown amounts stay empty, while zero remains zero. Multiple actuals for an estimate produce separate rows with their reconciliation timestamps, so consumers should not sum repeated estimate amounts.
